@@ -12,11 +12,25 @@ nexus_timezone: 'UTC'  # java timezone
 nexus_tmp_dir: '/tmp/nexus'
 nexus_script_dir: '{{ nexus_installation_dir }}/nexus-{{ nexus_version }}/etc/scripts'
 
+nexus_container_name: 'nexus3'
+nexus_image_tag: 'sonatype/nexus3:{{ nexus_version}}'
+nexus_backup_volume: nexus-backup
+nexus_data_volume: nexus-data
+nexus_networks:
+  - name: bridge
+nexus_port_args:
+  - "{{ nexus_default_port }}"
+nexus_volumes:
+  - '{{ nexus_data_volume }}:{{ nexus_data_dir }}:z'
+  - '{{ nexus_backup_volume }}:{{ nexus_backup_dir }}:z'
 
 # Nexus Backup
 nexus_backup_dir: '/var/nexus-backup'
-nexus_restore_log: '{{ nexus_backup_dir }}/nexus-restore.log'
 nexus_backup_log: '{{ nexus_backup_dir }}/nexus-backup.log'
+nexus_docker_backup_dir: "/tmp/nexus-backup"
+
+nexus_docker_restore_dir: "/tmp/nexus-restore"
+nexus_restore_log: '{{ nexus_backup_dir }}/nexus-restore.log'
 # Shall we configure backup ?
 nexus_backup_configure: false
 # Backup time cron expression
@@ -31,6 +45,8 @@ nexus_backup_keep_rotations: 4  # Keep 4 backup rotation by default (current + l
 
 # Nexus purge procedure:
 # run ansible-playbook example.yml -e "purge=true"
+purge: false
+nexus_host_docker: false
 
 # Nexus default properties
 nexus_default_port: 8081
@@ -120,6 +136,7 @@ nexus_proxy_exclude_hosts:
   - "127.*"
   - "[::1]"
 
+nexus_config_maven: false
 nexus_config_pypi: false
 nexus_config_docker: false
 nexus_config_raw: false
